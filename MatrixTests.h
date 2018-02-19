@@ -14,7 +14,7 @@ public:
     static void testOperators() {
         cout << "Matrix tests..." << endl;
         try {
-            Matrix<double> A("../raw/test/A.txt"), B("../raw/test/B.txt"), C;
+            Matrix A(2, 2, {1, 2, 3, 4}), B(2, 2, {1, 1, 1, 1}), C;
 
             try {
                 C = A;

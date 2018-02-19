@@ -70,7 +70,7 @@ public:
 
     void forwardPass(Layer &leftLayer) override {
         // sigm(x * w + w0)
-        net_ = leftLayer.getOutput() * weights_;
+        net_ = leftLayer.getOutput()  * weights_;
         net_ += biases_;
         output_ = net_ ^ [=](double v) -> double { return function_->calculate(v); };
     }

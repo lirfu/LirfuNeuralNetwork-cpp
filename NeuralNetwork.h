@@ -22,7 +22,7 @@ public:
 
     Matrix &getOutput(const Matrix &input);
 
-    double backpropagate(double learningRate, vector<SeparatedData> &dataBatches);
+    double backpropagate(double learningRate, vector<Data *> &dataBatches);
 
     double calculateError(vector<Matrix *> *inputs, vector<Matrix *> *outputs);
 };

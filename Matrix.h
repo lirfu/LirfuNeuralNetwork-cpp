@@ -33,17 +33,9 @@ private:
         if (rows_ == matrix.rows_ && cols_ == matrix.cols_) return;
 
         std::stringstream text;
-        text << "Sizes don't match: (" << rows_ << "," << cols_ << ") != (" << matrix.rows_ << "," << matrix.cols_
-             << ")";
+        text << "Matrix sizes don't match: ("
+             << rows_ << "," << cols_ << ") != (" << matrix.rows_ << "," << matrix.cols_ << ")";
         throw text.str();
-    }
-
-    void checkSquare() {
-        if (rows_ != cols_) {
-            std::stringstream string;
-            string << "Matrix must be square: " << rows_ << " != " << cols_ << endl;
-            throw string.str();
-        }
     }
 
     bool compareData(bool (*f)(double, double), const Matrix &matrix) {
@@ -60,8 +52,8 @@ private:
     void multiply(const Matrix &matrix, vector<vector<double>> &data) {
         if (cols_ != matrix.rows_) {
             std::stringstream string;
-            string << "Incompatible sizes: (" << rows_ << "," << cols_ << ") * (" << matrix.rows_ << "," << matrix.cols_
-                   << ").";
+            string << "Incompatible sizes: ("
+                   << rows_ << "," << cols_ << ") * (" << matrix.rows_ << "," << matrix.cols_ << ").";
             throw string.str();
         }
 
@@ -76,7 +68,6 @@ private:
             }
             data.push_back(row);
         }
-
     }
 
 public:
@@ -111,8 +102,8 @@ public:
         constructorCalls++;
         if (data.size() != rows * cols) {
             std::stringstream string;
-            string << "Number of values doesn't match the given matrix size: " << data.size() << " != "
-                   << (rows * cols);
+            string << "Number of values doesn't match the given matrix size: "
+                   << data.size() << " != " << (rows * cols);
             throw string.str();
         }
 
@@ -138,6 +129,8 @@ public:
         data_.assign(matrix.data_.begin(), matrix.data_.end());
     }
 
+    ~Matrix() = default;
+
     /* Access methods. */
 
     uint rows() const {
@@ -148,7 +141,7 @@ public:
         return cols_;
     }
 
-    Matrix getRow(uint index) {
+    Matrix getRowMatrix(uint index) {
         if (index < 0 || index > rows_ - 1) {
             std::stringstream string;
             string << "Row index out of bounds: " << index;
@@ -158,11 +151,10 @@ public:
         vector<double> row(data_[index]);
         vector<vector<double>> data;
         data.push_back(row);
-        Matrix matrix(data);
-        return matrix;
+        return {data};
     }
 
-    Matrix getCol(uint index) {
+    Matrix getColMatrix(uint index) {
         if (index < 0 || index > cols_ - 1) {
             std::stringstream string;
             string << "Column index out of bounds: " << index;
@@ -173,20 +165,18 @@ public:
         for (int r = 0; r < rows_; r++) {
             data[r].push_back(data_[r][index]);
         }
-        Matrix matrix(data);
-        return matrix;
+        return {data};
     }
 
     MatrixDimension getDimension() const {
-        MatrixDimension dimension(rows_, cols_);
-        return dimension;
+        return {rows_, cols_};
     }
 
     double get(uint row, uint col) const {
         if (row > rows_ - 1 || col > cols_ - 1) {
             std::stringstream text;
-            text << "Matrix index out of bounds: (" << row << "," << col << "), size is: (" << rows_ << "," << cols_
-                 << ")";
+            text << "Matrix index out of bounds: ("
+                 << row << "," << col << "), size is: (" << rows_ << "," << cols_ << ")";
             throw text.str();
         }
 
@@ -196,8 +186,8 @@ public:
     void set(uint row, uint col, double value) {
         if (row > rows_ - 1 || col > cols_ - 1) {
             std::stringstream text;
-            text << "Matrix index out of bounds: (" << row << "," << col << "), size is: (" << rows_ << "," << cols_
-                 << ")";
+            text << "Matrix index out of bounds: ("
+                 << row << "," << col << "), size is: (" << rows_ << "," << cols_ << ")";
             throw text.str();
         }
 
@@ -206,7 +196,6 @@ public:
 
     Matrix resize(uint rows, uint cols) {
         vector<vector<double>> newVals;
-
         for (int r = 0; r < rows; r++) {
             if (r >= rows_) {
                 newVals.emplace_back(cols, 0);
@@ -221,15 +210,12 @@ public:
                 }
                 newVals.push_back(row);
             }
-
         }
-
-        return Matrix(newVals);
+        return {newVals};
     }
 
     Matrix copy() {
-        Matrix matrix(*this);
-        return matrix;
+        return {*this};
     }
 
     /** Generates a tab separated string (TSV) representation of matrix. */
@@ -263,12 +249,12 @@ public:
             }
     }
 
-    void HadamardProduct(Matrix &matrix) {
+    Matrix &HadamardProduct(Matrix &matrix) {
         checkSizes(matrix);
-
         for (uint r = 0; r < rows_; r++)
             for (uint c = 0; c < cols_; c++)
                 data_[r][c] *= matrix[r][c];
+        return *this;
     }
 
     Matrix nHadamardProduct(Matrix &matrix) {
@@ -278,6 +264,18 @@ public:
     }
 
     /* OPERATORS */
+
+//    Matrix &operator=(const Matrix &matrix) {
+//        data_.clear();
+//        data_ = vector<vector<double>>(matrix.data_);
+//        return *this;
+//    }
+
+//    Matrix &operator=(Matrix &matrix) {
+//        data_.clear();
+//        data_.swap(matrix.data_);
+//        return *this;
+//    }
 
     vector<double> &operator[](uint row) {
         return data_[row];
@@ -292,8 +290,7 @@ public:
             data.push_back(row);
         }
 
-        Matrix matrix(data);
-        return matrix;
+        return {data};
     }
 
     bool operator==(const Matrix &matrix) {
@@ -323,101 +320,76 @@ public:
 
     Matrix &operator+=(const Matrix &matrix) {
         checkSizes(matrix);
-
         for (int r = 0; r < rows_; r++)
             for (int c = 0; c < cols_; c++)
                 data_[r][c] += matrix.data_[r][c];
+        return *this;
     }
 
     Matrix operator+(const Matrix &matrix) {
-        checkSizes(matrix);
-
-        vector<vector<double>> data(data_);
-        for (int r = 0; r < rows_; r++)
-            for (int c = 0; c < cols_; c++)
-                data[r][c] += matrix.data_[r][c];
-
-        Matrix newMatrix(data);
-        return newMatrix;
+        Matrix m(*this);
+        m += matrix;
+        return m;
     }
 
     Matrix &operator-=(const Matrix &matrix) {
         checkSizes(matrix);
-
         for (int r = 0; r < rows_; r++)
             for (int c = 0; c < cols_; c++)
                 data_[r][c] -= matrix.data_[r][c];
+        return *this;
     }
 
     Matrix operator-(const Matrix &matrix) {
-        checkSizes(matrix);
-
-        vector<vector<double>> data(data_);
-        for (int r = 0; r < rows_; r++)
-            for (int c = 0; c < cols_; c++)
-                data[r][c] -= matrix.data_[r][c];
-
-        Matrix newMatrix(data);
-        return newMatrix;
+        Matrix m(*this);
+        m -= matrix;
+        return m;
     }
 
     Matrix &operator*=(double value) {
         for (int r = 0; r < rows_; r++)
             for (int c = 0; c < cols_; c++)
                 data_[r][c] *= value;
-
         return *this;
     }
 
     Matrix operator*(double value) {
-        vector<vector<double>> data(data_);
-
-        for (int r = 0; r < rows_; r++)
-            for (int c = 0; c < cols_; c++)
-                data[r][c] *= value;
-
-        Matrix matrix(data);
-        return matrix;
+        Matrix m(*this);
+        m *= value;
+        return m;
     }
 
     friend Matrix operator*(double value, Matrix &matrix) {
-        return matrix * value;
+        Matrix m(matrix);
+        m *= value;
+        return m;
     }
 
     Matrix operator*(const Matrix &matrix) {
+        if (cols_ != matrix.rows_) {
+            stringstream str;
+            str << "Product of incompatible matrices: ("
+                << rows_ << "," << cols_ << ") != (" << matrix.rows_ << "," << matrix.cols_ << ")" << endl;
+            throw str.str();
+        }
         vector<vector<double>> data;
-
         multiply(matrix, data);
-
-        Matrix newMatrix(data);
-        return newMatrix;
-    }
-
-    void operator*=(const Matrix &matrix) {
-        vector<vector<double>> data;
-
-        multiply(matrix, data);
-
-        data_.swap(data);
+        return {data};
     }
 
     template<typename Lambda>
-    void operator^=(Lambda function) {
+    Matrix &operator^=(Lambda function) {
         for (int r = 0; r < rows_; r++)
             for (int c = 0; c < cols_; c++)
                 data_[r][c] = function(data_[r][c]);
+        return *this;
     }
 
     template<typename Lambda>
     Matrix operator^(Lambda function) {
-        vector<vector<double>> data(data_);
-
-        for (int r = 0; r < rows_; r++)
-            for (int c = 0; c < cols_; c++)
-                data[r][c] = function(data[r][c]);
-
-        Matrix matrix(data);
-        return matrix;
+        Matrix m(*this);
+        m ^= function;
+        return m;
     }
 };
 

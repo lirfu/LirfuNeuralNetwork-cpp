@@ -27,15 +27,15 @@ Matrix &NeuralNetwork::getOutput(const Matrix &input) {
     return lastLayer->getOutput();
 }
 
-double NeuralNetwork::backpropagate(double learningRate, vector<SeparatedData> &dataBatches) {
+double NeuralNetwork::backpropagate(double learningRate, vector<Data *> &dataBatches) {
     double error = 0;
     ulong numberOfData = 0;
     // Updating for each batch.
-    for (SeparatedData batch : dataBatches) {
+    for (Data *batch : dataBatches) {
         // Accumulating deltas for each sample in batch.
-        for (uint i = 0; i < batch.getTrainingInputs()->size(); i++) {
-            Matrix &input = *batch.getTrainingInputs()->operator[](i);
-            Matrix &targetOutput = *batch.getTrainingOutputs()->operator[](i);
+        for (uint i = 0; i < batch->getTrainingInputs()->size(); i++) {
+            Matrix &input = *batch->getTrainingInputs()->operator[](i);
+            Matrix &targetOutput = *batch->getTrainingOutputs()->operator[](i);
 
             // Forward pass to get output
             Matrix &outDiff = getOutput(input);
@@ -62,8 +62,8 @@ double NeuralNetwork::backpropagate(double learningRate, vector<SeparatedData> &
             layer->updateWeights();
 
         // Use test inputs to calculate the final error.
-        error += calculateError(batch.getTestInputs(), batch.getTestOutputs()) / 2;
-        numberOfData += batch.getTestInputs()->size();
+        error += calculateError(batch->getValidationInputs(), batch->getValidationOutputs()) / 2;
+        numberOfData += batch->getValidationInputs()->size();
     }
     return error / numberOfData; // Return normalized error
 }

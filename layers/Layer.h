@@ -16,14 +16,13 @@ protected:
     explicit Layer(Matrix &output) : output_(output) {}
 
     Layer(Layer &layer) {
-        output_ = *new Matrix(layer.output_);
+        output_ = Matrix(layer.output_);
     }
 
-    Layer() : output_(*new Matrix(0, 0)) {}
+    Layer() : output_(0, 0) {}
 
 public:
-    ~Layer() {
-    }
+    ~Layer() = default;
 
     /**
      * Returns the neuron's output matrix.

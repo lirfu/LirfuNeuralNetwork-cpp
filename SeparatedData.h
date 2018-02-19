@@ -7,8 +7,9 @@
 
 
 #include "Matrix.h"
+#include "Data.h"
 
-class SeparatedData {
+class SeparatedData : public Data {
 private:
     std::vector<Matrix *> *trainingInputs_;
     std::vector<Matrix *> *trainingOutputs_;
@@ -37,6 +38,24 @@ public:
         testOutputs_ = testOutputs;
     }
 
+    ~SeparatedData() {
+        for (Matrix *m:*trainingInputs_)
+            delete m;
+        delete trainingInputs_;
+
+        for (Matrix *m:*trainingOutputs_)
+            delete m;
+        delete trainingOutputs_;
+
+        for (Matrix *m:*testInputs_)
+            delete m;
+        delete testInputs_;
+
+        for (Matrix *m:*testOutputs_)
+            delete m;
+        delete testOutputs_;
+    }
+
 //    void shuffleData() {
 //        Random rand = new Random();
 //        for (uint i = 0; i < trainingInputs.size() && i < testInputs.size(); i++)
@@ -55,19 +74,19 @@ public:
 //            }
 //    }
 
-    std::vector<Matrix *> *getTrainingInputs() {
+    std::vector<Matrix *> *getTrainingInputs() override {
         return trainingInputs_;
     }
 
-    std::vector<Matrix *> *getTrainingOutputs() {
+    std::vector<Matrix *> *getTrainingOutputs() override {
         return trainingOutputs_;
     }
 
-    std::vector<Matrix *> *getTestInputs() {
+    std::vector<Matrix *> *getValidationInputs() override {
         return testInputs_;
     }
 
-    std::vector<Matrix *> *getTestOutputs() {
+    std::vector<Matrix *> *getValidationOutputs() override {
         return testOutputs_;
     }
 };
