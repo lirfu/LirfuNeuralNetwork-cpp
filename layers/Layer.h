@@ -15,8 +15,7 @@ protected:
 
     explicit Layer(Matrix &output) : output_(output) {}
 
-    Layer(Layer &layer) {
-        output_ = Matrix(layer.output_);
+    Layer(Layer &layer): output_(layer.output_){
     }
 
     Layer() : output_(0, 0) {}

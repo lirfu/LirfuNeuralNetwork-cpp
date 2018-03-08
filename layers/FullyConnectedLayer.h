@@ -12,20 +12,17 @@
 #include "../weightinitializers/WeightInitializer.h"
 
 class FullyConnectedLayer : public InnerLayer {
-protected:
+private:
     uint inputSize_;
     DerivativeFunction *function_;
+    DescendMethod *descendMethod_;
 
     Matrix net_;
-
     Matrix weights_;
     Matrix biases_;
 
     Matrix weightDeltas_;
     Matrix biasDeltas_;
-
-private:
-    DescendMethod *descendMethod_;
 
 //    FullyConnectedLayer(FullyConnectedLayer &fullyConnectedLayer) {
 //        InnerLayer::InnerLayer(fullyConnectedLayer);
@@ -44,20 +41,10 @@ private:
 public:
     FullyConnectedLayer(uint inputSize, uint neuronNumber, DerivativeFunction *function,
                         DescendMethod *descendMethod, WeightInitializer *initializer)
-            : InnerLayer(*new Matrix(1, neuronNumber)) {
-        inputSize_ = inputSize;
-        function_ = function;
-        descendMethod_ = descendMethod;
-
-        Matrix biases(1, neuronNumber);
-        biases_ = biases;
-        Matrix weights(inputSize, neuronNumber);
-        weights_ = weights;
-
-        Matrix biasDeltas(1, neuronNumber);
-        biasDeltas_ = biasDeltas;
-        Matrix weightDeltas(inputSize, neuronNumber);
-        weightDeltas_ = weightDeltas;
+            : InnerLayer(*new Matrix(1, neuronNumber)),
+              inputSize_(inputSize), function_(function), descendMethod_(descendMethod),
+              biases_(1, neuronNumber), weights_(inputSize, neuronNumber),
+              biasDeltas_(1, neuronNumber), weightDeltas_(inputSize, neuronNumber) {
 
         initializer->initialize(biases_);
         initializer->initialize(weights_);
@@ -70,7 +57,7 @@ public:
 
     void forwardPass(Layer &leftLayer) override {
         // sigm(x * w + w0)
-        net_ = leftLayer.getOutput()  * weights_;
+        net_ = leftLayer.getOutput() * weights_;
         net_ += biases_;
         output_ = net_ ^ [=](double v) -> double { return function_->calculate(v); };
     }
@@ -121,9 +108,9 @@ public:
     }
 
     void getNeuron(uint index, std::vector<double> &values) override {
-        values.push_back(biases_[0][index]);
+        values.push_back(biases_.get(0, index));
         for (uint r = 0; r < weights_.rows(); r++)
-            values.push_back(weights_[r][index]);
+            values.push_back(weights_.get(r, index));
     }
 
     void setNeuron(uint index, std::vector<double> &values) override {

@@ -10,8 +10,7 @@
 
 class InputLayer : public Layer {
 private:
-    InputLayer(InputLayer &inputLayer) {
-    }
+    InputLayer(InputLayer &inputLayer) = default;
 
 public:
     explicit InputLayer(uint neuronNumber) : Layer(*new Matrix(1, neuronNumber)) {
@@ -44,8 +43,7 @@ public:
     }
 
     InputLayer *copy() override {
-        InputLayer *layer = new InputLayer(*this);
-        return layer;
+        return new InputLayer(*this);
     }
 };
 
