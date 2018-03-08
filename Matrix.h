@@ -42,11 +42,10 @@ private:
     bool compareData(bool (*f)(double, double), const Matrix &matrix) {
         checkSizes(matrix);
 
-        for (int r = 0; r < rows_; r++)
-            for (int c = 0; c < cols_; c++)
-                if (!f(data_[r][c], matrix.data_[r][c]))
+        for (uint r = 0; r < rows_; r++)
+            for (uint c = 0; c < cols_; c++)
+                if (!f(get(r, c), matrix.get(r, c)))
                     return false;
-
         return true;
     }
 
@@ -58,12 +57,12 @@ private:
             throw string.str();
         }
 
-        for (int r = 0; r < rows_; r++) {
+        for (uint r = 0; r < rows_; r++) {
             vector<double> row;
-            for (int c = 0; c < matrix.cols_; c++) {
+            for (uint c = 0; c < matrix.cols_; c++) {
                 double sum = 0;
-                for (int i = 0; i < cols_; i++) {
-                    sum += data_[r][i] * matrix.data_[i][c];
+                for (uint i = 0; i < cols_; i++) {
+                    sum += get(r, i) * matrix.get(i, c);
                 }
                 row.push_back(sum);
             }
@@ -163,8 +162,8 @@ public:
         }
         vector<double> row;
         vector<vector<double>> data(rows_, row);
-        for (int r = 0; r < rows_; r++) {
-            data[r].push_back(data_[r][index]);
+        for (uint r = 0; r < rows_; r++) {
+            data[r].push_back(get(r, index));
         }
         return {data};
     }
@@ -197,16 +196,16 @@ public:
 
     Matrix resize(uint rows, uint cols) {
         vector<vector<double>> newVals;
-        for (int r = 0; r < rows; r++) {
+        for (uint r = 0; r < rows; r++) {
             if (r >= rows_) {
                 newVals.emplace_back(cols, 0);
             } else {
                 vector<double> row;
-                for (int c = 0; c < cols; c++) {
+                for (uint c = 0; c < cols; c++) {
                     if (c >= cols_) {
                         row.push_back(0);
                     } else {
-                        row.push_back(data_[r][c]);
+                        row.push_back(get(r, c));
                     }
                 }
                 newVals.push_back(row);
@@ -246,7 +245,7 @@ public:
     void forEach(Lambda &&lambda) {
         for (uint r = 0; r < rows_; r++)
             for (uint c = 0; c < cols_; c++) {
-                lambda(data_[r][c]);
+                lambda(get(r, c));
             }
     }
 
@@ -254,7 +253,7 @@ public:
         checkSizes(matrix);
         for (uint r = 0; r < rows_; r++)
             for (uint c = 0; c < cols_; c++)
-                data_[r][c] *= matrix.get(r, c);
+                set(r, c, get(r, c) * matrix.get(r, c));
         return *this;
     }
 
@@ -284,10 +283,10 @@ public:
 
     Matrix operator~() {
         vector<vector<double>> data;
-        for (int c = 0; c < cols_; c++) {
+        for (uint c = 0; c < cols_; c++) {
             vector<double> row;
-            for (int r = 0; r < rows_; r++)
-                row.push_back(data_[r][c]);
+            for (uint r = 0; r < rows_; r++)
+                row.push_back(get(r, c));
             data.push_back(row);
         }
 
@@ -321,9 +320,9 @@ public:
 
     Matrix &operator+=(const Matrix &matrix) {
         checkSizes(matrix);
-        for (int r = 0; r < rows_; r++)
-            for (int c = 0; c < cols_; c++)
-                data_[r][c] += matrix.data_[r][c];
+        for (uint r = 0; r < rows_; r++)
+            for (uint c = 0; c < cols_; c++)
+                set(r, c, get(r, c) + matrix.get(r, c));
         return *this;
     }
 
@@ -335,9 +334,9 @@ public:
 
     Matrix &operator-=(const Matrix &matrix) {
         checkSizes(matrix);
-        for (int r = 0; r < rows_; r++)
-            for (int c = 0; c < cols_; c++)
-                data_[r][c] -= matrix.data_[r][c];
+        for (uint r = 0; r < rows_; r++)
+            for (uint c = 0; c < cols_; c++)
+                set(r, c, get(r, c) - matrix.get(r, c));
         return *this;
     }
 
@@ -348,9 +347,9 @@ public:
     }
 
     Matrix &operator*=(double value) {
-        for (int r = 0; r < rows_; r++)
-            for (int c = 0; c < cols_; c++)
-                data_[r][c] *= value;
+        for (uint r = 0; r < rows_; r++)
+            for (uint c = 0; c < cols_; c++)
+                set(r, c, get(r, c) * value);
         return *this;
     }
 
@@ -380,9 +379,9 @@ public:
 
     template<typename Function>
     Matrix &operator^=(Function &&f) {
-        for (int r = 0; r < rows_; r++)
-            for (int c = 0; c < cols_; c++)
-                data_[r][c] = f(data_[r][c]);
+        for (uint r = 0; r < rows_; r++)
+            for (uint c = 0; c < cols_; c++)
+                set(r, c, f(get(r, c)));
         return *this;
     }
 
