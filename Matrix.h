@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <string>
 #include <sys/param.h>
 #include <vector>
@@ -71,7 +72,7 @@ private:
     }
 
 public:
-    static ulong constructorCalls;
+    static uint constructorCalls;
 
     /* CONSTRUCTORS */
     Matrix() {
@@ -253,7 +254,7 @@ public:
         checkSizes(matrix);
         for (uint r = 0; r < rows_; r++)
             for (uint c = 0; c < cols_; c++)
-                data_[r][c] *= matrix[r][c];
+                data_[r][c] *= matrix.get(r, c);
         return *this;
     }
 
@@ -267,19 +268,19 @@ public:
 
 //    Matrix &operator=(const Matrix &matrix) {
 //        data_.clear();
-//        data_ = vector<vector<double>>(matrix.data_);
+//        data_ = matrix.data_;
 //        return *this;
 //    }
-
+//
 //    Matrix &operator=(Matrix &matrix) {
 //        data_.clear();
-//        data_.swap(matrix.data_);
+//        data_ = matrix.data_;
 //        return *this;
 //    }
 
-    vector<double> &operator[](uint row) {
-        return data_[row];
-    }
+//    vector<double> &operator[](uint row) {
+//        return data_[row];
+//    }
 
     Matrix operator~() {
         vector<vector<double>> data;
@@ -377,18 +378,18 @@ public:
         return {data};
     }
 
-    template<typename Lambda>
-    Matrix &operator^=(Lambda function) {
+    template<typename Function>
+    Matrix &operator^=(Function &&f) {
         for (int r = 0; r < rows_; r++)
             for (int c = 0; c < cols_; c++)
-                data_[r][c] = function(data_[r][c]);
+                data_[r][c] = f(data_[r][c]);
         return *this;
     }
 
-    template<typename Lambda>
-    Matrix operator^(Lambda function) {
+    template<typename Function>
+    Matrix operator^(Function &&f) {
         Matrix m(*this);
-        m ^= function;
+        m ^= f;
         return m;
     }
 };

@@ -4,4 +4,4 @@
 
 #include "Matrix.h"
 
-ulong Matrix::constructorCalls = 0;
+uint Matrix::constructorCalls = 0;
