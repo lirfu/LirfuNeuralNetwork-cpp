@@ -11,11 +11,11 @@
 
 class Sigmoid : public DerivativeFunction {
 public:
-    inline double calculate(double argument) override {
+    double calculate(double argument) override {
         return 1. / (1 + exp(-argument));
     }
 
-    inline double calculateDerivative(double argument) override {
+    double calculateDerivative(double argument) override {
         double value = calculate(argument);
         return value * (1 - value);
     }

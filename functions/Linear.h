@@ -10,11 +10,11 @@
 
 class Linear : public DerivativeFunction {
 public:
-    inline double calculate(double argument) override {
+    double calculate(double argument) override {
         return argument;
     }
 
-    inline double calculateDerivative(double argument) override {
+    double calculateDerivative(double argument) override {
         return 1;
     }
 };
