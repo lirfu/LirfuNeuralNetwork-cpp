@@ -5,7 +5,7 @@
 #ifndef NNPP_VANILLAGRADIENTDESCEND_H
 #define NNPP_VANILLAGRADIENTDESCEND_H
 
-#include "../Matrix.h"
+#include "../matrix/Matrix.h"
 #include "DescendMethod.h"
 
 class VanillaGradientDescend : public DescendMethod {

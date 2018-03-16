@@ -5,7 +5,7 @@
 #ifndef NNPP_DESCENDMETHOD_H
 #define NNPP_DESCENDMETHOD_H
 
-#include "../Matrix.h"
+#include "../matrix/Matrix.h"
 
 class DescendMethod {
 public:

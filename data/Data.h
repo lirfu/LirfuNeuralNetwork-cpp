@@ -6,7 +6,7 @@
 #define NNPP_DATASET_H
 
 
-#include "Matrix.h"
+#include "../matrix/Matrix.h"
 
 class Data {
 public:

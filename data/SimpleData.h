@@ -2,21 +2,21 @@
 // Created by lirfu on 09.02.18..
 //
 
-#ifndef NNPP_SEPARATEDDATA_H
-#define NNPP_SEPARATEDDATA_H
+#ifndef NNPP_SIMPLEDDATA_H
+#define NNPP_SIMPLEDDATA_H
 
 
-#include "Matrix.h"
+#include "../matrix/Matrix.h"
 #include "Data.h"
 
 /**Does not perform data splitting, uses same sets for training and validation.*/
-class SeparatedData : public Data {
+class SimpleData : public Data {
 private:
     std::vector<Matrix *> *inputsSet_;
     std::vector<Matrix *> *outputsSet_;
 
 public:
-    SeparatedData(std::vector<Matrix *> *inputsSet, std::vector<Matrix *> *outputsSet) {
+    SimpleData(std::vector<Matrix *> *inputsSet, std::vector<Matrix *> *outputsSet) {
         if (inputsSet->size() != outputsSet->size()) {
             std::stringstream str;
             str << "Data array lengths don't match: " << inputsSet->size()
@@ -28,7 +28,7 @@ public:
         outputsSet_ = outputsSet;
     }
 
-    ~SeparatedData() {
+    ~SimpleData() {
         for (Matrix *m:*inputsSet_)
             delete m;
         delete inputsSet_;
@@ -56,4 +56,4 @@ public:
 };
 
 
-#endif //NNPP_SEPARATEDDATA_H
+#endif //NNPP_SIMPLEDDATA_H

@@ -4,7 +4,8 @@
 
 #include "NeuralNetwork.h"
 
-NeuralNetwork::NeuralNetwork(InputLayer *inputLayer, std::initializer_list<InnerLayer *> layers) : inputLayer_(inputLayer) {
+NeuralNetwork::NeuralNetwork(InputLayer *inputLayer, std::initializer_list<InnerLayer *> layers) : inputLayer_(
+        inputLayer) {
     for (InnerLayer *l : layers)
         hiddenLayers_.push_back(l);
 }
@@ -45,7 +46,7 @@ double NeuralNetwork::backpropagate(double learningRate, vector<Data *> &dataBat
             // Iterate through the rest of the layers (backwards)
             InnerLayer *currentLayer;
             Layer *leftLayer;
-            for (uint l = hiddenLayers_.size() - 1; l >= 0 && l != -1u; l--) {
+            for (uint l = hiddenLayers_.size() - 1; l != -1u; l--) {
                 currentLayer = hiddenLayers_[l];
                 if (l == 0)
                     leftLayer = inputLayer_;
@@ -72,7 +73,7 @@ double NeuralNetwork::calculateError(vector<Matrix *> *inputs, vector<Matrix *> 
     double totalError = 0;
     for (uint i = 0; i < inputs->size(); i++) {
         // Calculate the output difference
-        Matrix outDiff = *outputs->operator[](i) - getOutput(*inputs->operator[](i));
+        Matrix outDiff = ((Matrix) *outputs->at(i)) - getOutput(*inputs->operator[](i));
 
         // Calculate the total output error
         for (uint r = 0; r < outDiff.rows(); r++)
@@ -80,4 +81,17 @@ double NeuralNetwork::calculateError(vector<Matrix *> *inputs, vector<Matrix *> 
                 totalError += outDiff.get(r, c) * outDiff.get(r, c);
     }
     return totalError / inputs->size();
+}
+
+std::string NeuralNetwork::toString() {
+    std::stringstream stringstream1;
+    stringstream1 << "Input layer" << endl
+                  << inputLayer_->toString();
+
+    uint i = 0;
+    for (InnerLayer *l:hiddenLayers_) {
+        stringstream1 << "Inner layer " << ++i << endl
+                      << l->toString();
+    }
+    return stringstream1.str();
 }

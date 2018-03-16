@@ -8,7 +8,7 @@
 
 #include "layers/InnerLayer.h"
 #include "layers/InputLayer.h"
-#include "SeparatedData.h"
+#include "data/SeparatedData.h"
 
 class NeuralNetwork {
 private:
@@ -25,6 +25,8 @@ public:
     double backpropagate(double learningRate, vector<Data *> &dataBatches);
 
     double calculateError(vector<Matrix *> *inputs, vector<Matrix *> *outputs);
+
+    std::string toString();
 };
 
 

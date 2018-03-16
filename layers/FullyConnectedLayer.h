@@ -62,7 +62,7 @@ public:
         output_ = net_ ^ [=](double v) -> double { return function_->calculate(v); };
     }
 
-    Matrix &backwardPass(Matrix &outputDifferences, Matrix &leftOutputs, double learningRate) {
+    Matrix &backwardPass(Matrix &outputDifferences, Matrix &leftOutputs, double learningRate) override {
         // Layer differences
         Matrix differences = ~net_;
         differences ^= [=](double v) -> double { return function_->calculateDerivative(v); };
@@ -99,7 +99,8 @@ public:
 
     std::string toString() {
         std::stringstream str;
-        str << biases_.toString(2) << '\n' << weights_.toString(2);
+        str << "B: " << biases_.toString()
+            << "W: " << weights_.toString();
         return str.str();
     }
 

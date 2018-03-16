@@ -5,7 +5,7 @@
 #define NNPP_RANDOMWEIGHTINITIALIZER_H
 
 #include <random>
-#include "../Matrix.h"
+#include "../matrix/Matrix.h"
 #include "WeightInitializer.h"
 
 class RandomWeightInitializer : public WeightInitializer {

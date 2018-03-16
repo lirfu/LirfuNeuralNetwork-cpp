@@ -17,6 +17,8 @@ protected:
     InnerLayer() {}
 
 public:
+    ~InnerLayer() = default;
+
     virtual void forwardPass(Layer &leftLayer)=0;
 
     virtual Matrix &backwardPass(Matrix &outDiff, Matrix &leftOutputs, double learningRate)=0;

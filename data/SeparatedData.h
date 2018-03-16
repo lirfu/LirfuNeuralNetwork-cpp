@@ -6,7 +6,7 @@
 #define NNPP_SEPARATEDDATA_H
 
 
-#include "Matrix.h"
+#include "../matrix/Matrix.h"
 #include "Data.h"
 
 class SeparatedData : public Data {
@@ -39,19 +39,19 @@ public:
     }
 
     ~SeparatedData() {
-        for (Matrix *m:*trainingInputs_)
+        for (Matrix *m : *trainingInputs_)
             delete m;
         delete trainingInputs_;
 
-        for (Matrix *m:*trainingOutputs_)
+        for (Matrix *m : *trainingOutputs_)
             delete m;
         delete trainingOutputs_;
 
-        for (Matrix *m:*testInputs_)
+        for (Matrix *m : *testInputs_)
             delete m;
         delete testInputs_;
 
-        for (Matrix *m:*testOutputs_)
+        for (Matrix *m : *testOutputs_)
             delete m;
         delete testOutputs_;
     }

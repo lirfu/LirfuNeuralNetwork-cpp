@@ -45,6 +45,12 @@ public:
     InputLayer *copy() override {
         return new InputLayer(*this);
     }
+
+    std::string toString() override {
+        std::stringstream stringstream1;
+        stringstream1 << "O: " << output_.toString();
+        return stringstream1.str();
+    }
 };
 
 

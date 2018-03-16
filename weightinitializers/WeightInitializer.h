@@ -6,7 +6,7 @@
 #define NNPP_WEIGHTINITIALIZER_H
 
 
-#include "../Matrix.h"
+#include "../matrix/Matrix.h"
 
 class WeightInitializer {
 public:

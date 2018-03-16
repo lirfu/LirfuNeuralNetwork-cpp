@@ -6,8 +6,8 @@
 #define NN_LAYER_H
 
 
-#include "../Matrix.h"
-#include "../MatrixDimension.h"
+#include "../matrix/Matrix.h"
+#include "../matrix/MatrixDimension.h"
 
 class Layer {
 protected:
@@ -21,7 +21,7 @@ protected:
     Layer() : output_(0, 0) {}
 
 public:
-    ~Layer() = default;
+    virtual ~Layer() = default; //TODO Why virtual???
 
     /**
      * Returns the neuron's output matrix.
@@ -58,6 +58,8 @@ public:
     virtual void setNeuron(uint index, vector<double> &values)=0;
 
     virtual Layer *copy()=0;
+
+    virtual std::string toString()=0;
 };
 
 
