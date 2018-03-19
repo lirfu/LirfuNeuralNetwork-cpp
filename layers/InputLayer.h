@@ -34,11 +34,11 @@ public:
         return output_.cols();
     }
 
-    void getNeuron(uint index, vector<double> &values) override {
+    void getNeuron(uint index, double *values) override {
         // do nothing
     }
 
-    void setNeuron(uint index, std::vector<double> &values) override {
+    void setNeuron(uint index, double *values) override {
         // do nothing
     }
 

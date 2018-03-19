@@ -66,7 +66,7 @@ public:
         // Layer differences
         Matrix differences = ~net_;
         differences ^= [=](double v) -> double { return function_->calculateDerivative(v); };
-        differences.HadamardProduct(outputDifferences);
+        differences %= outputDifferences;
 
         // Update the differences for the next iteration
         outputDifferences = weights_ * differences;
@@ -93,14 +93,13 @@ public:
     }
 
     FullyConnectedLayer *copy() override {
-        FullyConnectedLayer *layer = new FullyConnectedLayer(*this);
-        return layer;
+        return new FullyConnectedLayer(*this);
     }
 
     std::string toString() {
         std::stringstream str;
-        str << "B: " << biases_.toString()
-            << "W: " << weights_.toString();
+        str << "B: " << biases_.toString(17)
+            << "W: " << weights_.toString(17);
         return str.str();
     }
 
@@ -108,15 +107,15 @@ public:
         return output_.cols();
     }
 
-    void getNeuron(uint index, std::vector<double> &values) override {
-        values.push_back(biases_.get(0, index));
+    void getNeuron(uint index, double *values) override {
+        uint i = 0;
+        values[i++] = biases_.get(0, index);
         for (uint r = 0; r < weights_.rows(); r++)
-            values.push_back(weights_.get(r, index));
+            values[i++] = weights_.get(r, index);
     }
 
-    void setNeuron(uint index, std::vector<double> &values) override {
+    void setNeuron(uint index, double *values) override {
         biases_.set(0, index, values[0]);
-
         for (uint r = 0; r < weights_.rows(); r++)
             weights_.set(r, index, values[r + 1]);
     }

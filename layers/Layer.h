@@ -48,14 +48,14 @@ public:
      * @param index Index of the neuron in layer.
      * @param values Vector to fill with values.
      */
-    virtual void getNeuron(uint index, vector<double> &values)=0;
+    virtual void getNeuron(uint index, double *values)=0;
 
     /**
      * Sets the neuron weights.
      * @param index Index of the neuron in layer.
      * @param values Vector with weight values.
      */
-    virtual void setNeuron(uint index, vector<double> &values)=0;
+    virtual void setNeuron(uint index, double *values)=0;
 
     virtual Layer *copy()=0;
 
