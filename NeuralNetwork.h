@@ -27,6 +27,8 @@ public:
     double calculateError(vector<Matrix *> *inputs, vector<Matrix *> *outputs);
 
     std::string toString();
+
+    std::vector<InnerLayer *> getLayers();
 };
 
 

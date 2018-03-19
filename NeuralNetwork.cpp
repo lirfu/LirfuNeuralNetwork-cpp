@@ -38,10 +38,8 @@ double NeuralNetwork::backpropagate(double learningRate, vector<Data *> &dataBat
             Matrix &input = *batch->getTrainingInputs()->operator[](i);
             Matrix &targetOutput = *batch->getTrainingOutputs()->operator[](i);
 
-            // Forward pass to get output
-            Matrix &outDiff = getOutput(input);
             // Calculate the output difference
-            outDiff = ~(outDiff - targetOutput);
+            Matrix outDiff = ~(getOutput(input) - targetOutput);
 
             // Iterate through the rest of the layers (backwards)
             InnerLayer *currentLayer;
@@ -85,8 +83,8 @@ double NeuralNetwork::calculateError(vector<Matrix *> *inputs, vector<Matrix *> 
 
 std::string NeuralNetwork::toString() {
     std::stringstream stringstream1;
-    stringstream1 << "Input layer" << endl
-                  << inputLayer_->toString();
+//    stringstream1 << "Input layer" << endl
+//                  << inputLayer_->toString();
 
     uint i = 0;
     for (InnerLayer *l:hiddenLayers_) {
@@ -94,4 +92,8 @@ std::string NeuralNetwork::toString() {
                       << l->toString();
     }
     return stringstream1.str();
+}
+
+std::vector<InnerLayer *> NeuralNetwork::getLayers() {
+    return hiddenLayers_;
 }
