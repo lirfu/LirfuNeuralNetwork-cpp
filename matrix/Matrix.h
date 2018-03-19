@@ -22,8 +22,8 @@
 #include <limits>
 #include <iomanip>
 #include <cstring>
+#include <cassert>
 #include "MatrixDimension.h"
-#include "IMatrix.h"
 
 using namespace std;
 
@@ -51,10 +51,10 @@ private:
     }
 
     bool compareData(bool (*f)(double, double), const Matrix &matrix) {
-        for (uint r = 0; r < rows_; r++)
-            for (uint c = 0; c < cols_; c++)
-                if (!f(get(r, c), matrix.get(r, c)))
-                    return false;
+        uint max = rows_ * cols_;
+        for (uint i = 0; i < max; i++)
+            if (!f(data_[i], matrix.data_[i]))
+                return false;
         return true;
     }
 
@@ -134,10 +134,12 @@ public:
     }
 
     inline double get(uint row, uint col) const {
+        assert(row < rows_ && col < cols_);
         return data_[row * cols_ + col];
     }
 
     inline void set(uint row, uint col, double value) {
+        assert(row < rows_ && col < cols_);
         data_[row * cols_ + col] = value;
     }
 
@@ -177,6 +179,7 @@ public:
     }
 
     /* OPERATORS */
+    /** Copy assignment. Deletes current data and copies data from given matrix. */
     Matrix &operator=(const Matrix &matrix) {
         if (this != &matrix) {
             rows_ = matrix.rows_;
@@ -189,6 +192,7 @@ public:
         return *this;
     }
 
+    /** Move assignment. Moves data from given matrix and removes its data. */
     Matrix &operator=(Matrix &&matrix) noexcept {
         if (this != &matrix) {
             rows_ = matrix.rows_;
@@ -201,6 +205,7 @@ public:
         return *this;
     }
 
+    /** Creates a new matrix with transposed data of this. */
     Matrix operator~() {
         double *data = new double[rows_ * cols_];
         for (uint c = 0; c < cols_; c++) {
@@ -211,39 +216,40 @@ public:
         return {cols_, rows_, data};
     }
 
+    /**Checks if all data is equal (element-wise). */
     bool operator==(const Matrix &matrix) {
         if (rows_ != matrix.rows_ || cols_ != matrix.cols_) return false;
         return compareData([](double a, double b) -> bool { return a == b; }, matrix);
     }
 
+    /**Checks if all data is different (element-wise). */
     bool operator!=(const Matrix &matrix) {
         return !(*this == matrix);
     }
 
+    /**Checks if all data is smaller (element-wise). */
     bool operator<(const Matrix &matrix) {
         return compareData([](double a, double b) -> bool { return a < b; }, matrix);
     }
 
+    /**Checks if all data is smaller or equal (element-wise). */
     bool operator<=(const Matrix &matrix) {
         return compareData([](double a, double b) -> bool { return a <= b; }, matrix);
     }
 
+    /**Checks if all data is larger (element-wise). */
     bool operator>(const Matrix &matrix) {
         return compareData([](double a, double b) -> bool { return a > b; }, matrix);
     }
 
+    /**Checks if all data is larger or equal (element-wise). */
     bool operator>=(const Matrix &matrix) {
         return compareData([](double a, double b) -> bool { return a >= b; }, matrix);
     }
 
+    /** Add given matrix to this matrix (element-wise). */
     Matrix &operator+=(const Matrix &matrix) {
-        // Old syntax (performance issue)
-//        checkSizes(matrix);
-//        uint index = 0;
-//        for (uint r = 0; r < rows_; r++)
-//            for (uint c = 0; c < cols_; c++)
-//                set(r, c, get(r, c) + matrix.get(r, c));
-
+        assert(rows_ == matrix.rows_ && cols_ == matrix.cols_);
         uint max = rows_ * cols_;
         for (uint i = 0; i < max; i++) {
             data_[i] += matrix.data_[i];
@@ -251,25 +257,30 @@ public:
         return *this;
     }
 
+    /** Construct new matrix from addition of this and given matrix (element-wise). */
     Matrix operator+(const Matrix &matrix) {
         Matrix m(*this);
         m += matrix;
         return m;
     }
 
+    /** Subtract given matrix form this matrix (element-wise). */
     Matrix &operator-=(const Matrix &matrix) {
+        assert(rows_ == matrix.rows_ && cols_ == matrix.cols_);
         uint max = rows_ * cols_;
         for (uint i = 0; i < max; i++)
             data_[i] -= matrix.data_[i];
         return *this;
     }
 
+    /** Construct new matrix from subtraction of this and given matrix (element-wise). */
     Matrix operator-(const Matrix &matrix) {
         Matrix m(*this);
         m -= matrix;
         return m;
     }
 
+    /** Multiply this matrix with given scalar (element-wise). */
     Matrix &operator*=(double value) {
         uint max = rows_ * cols_;
         for (uint i = 0; i < max; i++)
@@ -277,53 +288,54 @@ public:
         return *this;
     }
 
+    /** Construct new matrix from multiplication of this and given scalar (element-wise). */
     Matrix operator*(double value) {
         Matrix m(*this);
         m *= value;
         return m;
     }
 
+    /** Construct new matrix from multiplication of given scalar and this (element-wise). */
     friend Matrix operator*(double value, Matrix &matrix) {
         Matrix m(matrix);
         m *= value;
         return m;
     }
 
+    /** Multiply given matrix to this matrix (element-wise). */
     Matrix &operator%=(const Matrix &matrix) {
+        assert(rows_ == matrix.rows_ && cols_ == matrix.cols_);
         uint max = rows_ * cols_;
         for (uint i = 0; i < max; i++)
             data_[i] *= matrix.data_[i];
         return *this;
     }
 
+    /** Construct new matrix from multiplication of this and given matrix (element-wise). */
     Matrix operator%(const Matrix &matrix) {
         Matrix m(*this);
         m %= matrix;
         return m;
     }
 
+    /** Construct new matrix from addition of this and given matrix (matrix multiplication). */
     Matrix operator*(const Matrix &matrix) {
-        if (cols_ != matrix.rows_) {
-            stringstream str;
-            str << "Product of incompatible matrices: ("
-                << rows_ << "," << cols_ << ") != (" << matrix.rows_ << "," << matrix.cols_ << ")" << endl;
-            throw str.str();
-        }
+        assert(cols_ == matrix.rows_);
 
         double *newData = new double[rows_ * matrix.cols_];
         for (uint r = 0; r < rows_; r++) {
-            uint r_index = r * matrix.cols_;
             for (uint c = 0; c < matrix.cols_; c++) {
                 double sum = 0;
                 for (uint i = 0; i < cols_; i++)
-                    sum += data_[r_index + i] * matrix.get(i, c);
-                newData[r_index + c] = sum;
+                    sum += data_[r * cols_ + i] * matrix.get(i, c);
+                newData[r * matrix.cols_ + c] = sum;
             }
         }
         return {rows_, matrix.cols_, newData};
     }
 
     template<typename Function>
+    /** Apply given function to this matrix (element-wise). */
     Matrix &operator^=(Function &&f) {
         uint max = rows_ * cols_;
         for (uint i = 0; i < max; i++)
@@ -332,6 +344,7 @@ public:
     }
 
     template<typename Function>
+    /** Construct new matrix from applying given function to this matrix (element-wise). */
     Matrix operator^(Function &&f) {
         Matrix m(*this);
         m ^= f;
