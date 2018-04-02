@@ -11,38 +11,37 @@
 #include "../descentmethods/DescendMethod.h"
 #include "../weightinitializers/WeightInitializer.h"
 
-class FullyConnectedLayer : public InnerLayer {
+template<typename T>
+class FullyConnectedLayer : public InnerLayer<T> {
 private:
     uint inputSize_;
-    DerivativeFunction *function_;
-    DescendMethod *descendMethod_;
+    std::shared_ptr<DerivativeFunction> activation_;
+    std::shared_ptr<DescendMethod> descendMethod_;
 
-    Matrix net_;
-    Matrix weights_;
-    Matrix biases_;
+    T net_;
+    T weights_;
+    T biases_;
 
-    Matrix weightDeltas_;
-    Matrix biasDeltas_;
+    T weightDeltas_;
+    T biasDeltas_;
 
-//    FullyConnectedLayer(FullyConnectedLayer &fullyConnectedLayer) {
-//        InnerLayer::InnerLayer(fullyConnectedLayer);
-//
-//        inputSize_ = fullyConnectedLayer.inputSize_;
-//        function_ = fullyConnectedLayer.function_;
-//        weights_ = fullyConnectedLayer.weights_.copy();
-//        biases_ = fullyConnectedLayer.biases_.copy();
-//        weightDeltas_ = fullyConnectedLayer.weightDeltas_.copy();
-//        biasDeltas_ = fullyConnectedLayer.biasDeltas_.copy();
-//
-//        descendMethod_ = fullyConnectedLayer.descendMethod_.copy();
-//        net_ = fullyConnectedLayer.net_.copy();
-//    }
+    FullyConnectedLayer(FullyConnectedLayer<T> &fullyConnectedLayer) : InnerLayer<T>(fullyConnectedLayer) {
+        inputSize_ = fullyConnectedLayer.inputSize_;
+        activation_ = fullyConnectedLayer.activation_;
+        descendMethod_ = fullyConnectedLayer.descendMethod_;
+        net_ = T(fullyConnectedLayer.net_);
+
+        weights_ = T(fullyConnectedLayer.weights_);
+        biases_ = T(fullyConnectedLayer.biases_);
+        weightDeltas_ = T(fullyConnectedLayer.weightDeltas_);
+        biasDeltas_ = T(fullyConnectedLayer.biasDeltas_);
+    }
 
 public:
-    FullyConnectedLayer(uint inputSize, uint neuronNumber, DerivativeFunction *function,
-                        DescendMethod *descendMethod, WeightInitializer *initializer)
-            : InnerLayer(*new Matrix(1, neuronNumber)),
-              inputSize_(inputSize), function_(function), descendMethod_(descendMethod),
+    FullyConnectedLayer(uint inputSize, uint neuronNumber, std::shared_ptr<DerivativeFunction> activationFunction,
+                        std::shared_ptr<DescendMethod> descendMethod, WeightInitializer *initializer)
+            : InnerLayer<T>(*new T(1, neuronNumber)),
+              inputSize_(inputSize), activation_(activationFunction), descendMethod_(descendMethod),
               biases_(1, neuronNumber), weights_(inputSize, neuronNumber),
               biasDeltas_(1, neuronNumber), weightDeltas_(inputSize, neuronNumber) {
 
@@ -51,22 +50,19 @@ public:
     }
 
     ~FullyConnectedLayer() {
-        delete function_;
+        delete activation_;
         delete descendMethod_;
     }
 
-    void forwardPass(Layer &leftLayer) override {
+    void forwardPass(Layer<T> &leftLayer) override {
         // sigm(x * w + w0)
-        net_ = leftLayer.getOutput() * weights_;
-        net_ += biases_;
-        output_ = net_ ^ [=](double v) -> double { return function_->calculate(v); };
+        net_ = leftLayer.getOutput() * weights_ + biases_;
+        this->output_ = net_ ^ activation_->getFunction();
     }
 
-    Matrix &backwardPass(Matrix &outputDifferences, Matrix &leftOutputs, double learningRate) override {
+    T &backwardPass(T &outputDifferences, T &leftOutputs, double learningRate) override {
         // Layer differences
-        Matrix differences = ~net_;
-        differences ^= [=](double v) -> double { return function_->calculateDerivative(v); };
-        differences %= outputDifferences;
+        T differences = outputDifferences % (~(net_ ^ (activation_->getDerivative())));
 
         // Update the differences for the next iteration
         outputDifferences = weights_ * differences;
@@ -104,7 +100,7 @@ public:
     }
 
     uint getNeuronNumber() override {
-        return output_.cols();
+        return this->output_.cols();
     }
 
     void getNeuron(uint index, double *values) override {

@@ -2,6 +2,7 @@
 // Created by lirfu on 19.03.18..
 //
 
+#include <memory>
 #include "Demos.h"
 #include "../matrix/Matrix.h"
 #include "../data/Data.h"
@@ -25,23 +26,36 @@ void Demos::demoRegression() {
         for (int i = 0; i < numberOfPoints; i++) {
             double input = i * 2. * M_PI / numberOfPoints;
             inputs.push_back(new Matrix(1, 2, {input, input}));
-            outputs.push_back(new Matrix(1, 1, {4 * sin(input) * input + 5}));
+            outputs.push_back(new Matrix(1, 2, {4 * sin(input) * input + 5, 0.2 * input + 3}));
         }
         vector<Data *> batches;
         batches.push_back(new SimpleData(&inputs, &outputs));
 
         // Build the network.
         WeightInitializer *initializer = new RandomWeightInitializer(-2, 2);
-        DescendMethod *descendMethod = new VanillaGradientDescend();
-        NeuralNetwork network(new InputLayer(2), {
-                new FullyConnectedLayer(2, 3, new Sigmoid(), descendMethod, initializer),
-                new FullyConnectedLayer(3, 7, new Sigmoid(), descendMethod, initializer),
-                new FullyConnectedLayer(7, 4, new Sigmoid(), descendMethod, initializer),
-                new FullyConnectedLayer(4, 1, new Linear(), descendMethod, initializer)
+        shared_ptr<DescendMethod> descendMethod(new VanillaGradientDescend());
+        shared_ptr<DerivativeFunction> sigmoid(new Sigmoid());
+        shared_ptr<DerivativeFunction> linear(new Linear());
+        NeuralNetwork network(new InputLayer<Matrix>(2), {
+                new FullyConnectedLayer<Matrix>(2, 7, sigmoid, descendMethod, initializer),
+                new FullyConnectedLayer<Matrix>(7, 4, sigmoid, descendMethod, initializer),
+                new FullyConnectedLayer<Matrix>(4, 3, sigmoid, descendMethod, initializer),
+                new FullyConnectedLayer<Matrix>(3, 2, linear, descendMethod, initializer)
         });
         delete initializer;
 
-        cout << "init 2" << endl; // Initialize graph with 2 curves
+//        You can set weight parameters to compare performance with other implementations.
+//        vector<InnerLayer<Matrix> *> layers = network.getLayers();
+//        double weights[] = {0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2};
+//        layers[0]->setNeuron(0, weights);
+//        layers[0]->setNeuron(1, weights);
+//        layers[0]->setNeuron(2, weights);
+//        layers[0]->setNeuron(3, weights);
+//        layers[0]->setNeuron(4, weights);
+//        layers[1]->setNeuron(0, weights);
+//        layers[1]->setNeuron(1, weights);
+
+        cout << "init 4" << endl; // Initialize graph with 2 curves
 
         // Run backpropagation.
         uint iteration = 0;
@@ -60,7 +74,8 @@ void Demos::demoRegression() {
                 for (uint i = 0; i < numberOfPoints; i++) {
                     out = network.getOutput(*inputs.at(i));
                     // Add the target and predicted output values.
-                    std::cout << "add " << out.get(0, 0) << " " << outputs.at(i)->get(0, 0) << std::endl;
+                    std::cout << "add " << out.get(0, 0) << " " << out.get(0, 1) << " " <<
+                              outputs.at(i)->get(0, 0) << " " << outputs.at(i)->get(0, 1) << std::endl;
                 }
             }
         }
@@ -68,7 +83,6 @@ void Demos::demoRegression() {
                   << setprecision(16) << error << std::endl;
 
         // Cleanup data.
-        delete descendMethod;
         for (Data *sd : batches) {
             delete sd;
         }

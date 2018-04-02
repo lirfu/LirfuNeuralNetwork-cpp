@@ -6,11 +6,13 @@
 #define NNPP_DERIVATIVEFUNCTION_H
 
 
+#include "IFunction.h"
+
 class DerivativeFunction {
 public:
-    virtual double calculate(double argument)=0;
+    virtual IFunction &getFunction()=0;
 
-    virtual double calculateDerivative(double argument)=0;
+    virtual IFunction &getDerivative()=0;
 };
 
 

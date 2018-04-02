@@ -8,22 +8,24 @@
 
 #include "Layer.h"
 
-class InputLayer : public Layer {
+
+template<typename T>
+class InputLayer : public Layer<T> {
 private:
-    InputLayer(InputLayer &inputLayer) = default;
+    InputLayer(InputLayer<T> &inputLayer) = default;
 
 public:
-    explicit InputLayer(uint neuronNumber) : Layer(*new Matrix(1, neuronNumber)) {
+    explicit InputLayer(uint neuronNumber) : Layer<T>(*new T(1, neuronNumber)) {
     }
 
-    void setOutput(const Matrix &output) {
-        if (!output_.getDimension().equals(output.getDimension())) {
+    virtual void setOutput(const T &output) {
+        if (!this->output_.getDimension().equals(output.getDimension())) {
             std::stringstream message;
-            message << "Matrices are not the same size: " << output_.getDimension().toString() << " != " << output
+            message << "Matrices are not the same size: " << this->output_.getDimension().toString() << " != " << output
                     .getDimension().toString();
             throw message.str();
         }
-        output_ = output;
+        this->output_ = output;
     }
 
     uint numberOfParameters() override {
@@ -31,7 +33,7 @@ public:
     }
 
     uint getNeuronNumber() override {
-        return output_.cols();
+        return this->output_.cols();
     }
 
     void getNeuron(uint index, double *values) override {
@@ -42,13 +44,13 @@ public:
         // do nothing
     }
 
-    InputLayer *copy() override {
-        return new InputLayer(*this);
+    InputLayer<T> *copy() override {
+        return new InputLayer<T>(*this);
     }
 
     std::string toString() override {
         std::stringstream stringstream1;
-        stringstream1 << "O: " << output_.toString();
+        stringstream1 << "O: " << this->output_.toString();
         return stringstream1.str();
     }
 };

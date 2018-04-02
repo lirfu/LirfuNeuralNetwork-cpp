@@ -9,13 +9,28 @@
 #include "DerivativeFunction.h"
 
 class Linear : public DerivativeFunction {
+private:
+    class Function : public IFunction {
+    public:
+        double calculate(double value) override {
+            return value;
+        }
+    } function;
+
+    class Derivation : public IFunction {
+    public:
+        double calculate(double d) override {
+            return 1;
+        }
+    } derivation;
+
 public:
-    double calculate(double argument) override {
-        return argument;
+    IFunction &getFunction() override {
+        return function;
     }
 
-    double calculateDerivative(double argument) override {
-        return 1;
+    IFunction &getDerivative() override {
+        return derivation;
     }
 };
 

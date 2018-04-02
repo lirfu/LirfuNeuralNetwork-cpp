@@ -9,25 +9,24 @@
 #include "../matrix/Matrix.h"
 #include "../matrix/MatrixDimension.h"
 
+template<typename T>
 class Layer {
 protected:
-    Matrix output_;
-
-    explicit Layer(Matrix &output) : output_(output) {}
+    explicit Layer(T &output) : output_(output) {}
 
     Layer(Layer &layer): output_(layer.output_){
     }
 
-    Layer() : output_(0, 0) {}
-
 public:
-    virtual ~Layer() = default; //TODO Why virtual???
+
+    T output_;
+    ~Layer() = default;
 
     /**
      * Returns the neuron's output matrix.
      * @return Output matrix.
      */
-    Matrix &getOutput() {
+    T &getOutput() {
         return output_;
     }
 
