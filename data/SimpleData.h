@@ -5,18 +5,17 @@
 #ifndef NNPP_SIMPLEDDATA_H
 #define NNPP_SIMPLEDDATA_H
 
-
-#include "../matrix/Matrix.h"
 #include "Data.h"
 
 /**Does not perform data splitting, uses same sets for training and validation.*/
-class SimpleData : public Data {
+template <typename T>
+class ISimpleData : public IData<T> {
 private:
-    std::vector<Matrix *> *inputsSet_;
-    std::vector<Matrix *> *outputsSet_;
+    std::vector<T *> *inputsSet_;
+    std::vector<T *> *outputsSet_;
 
 public:
-    SimpleData(std::vector<Matrix *> *inputsSet, std::vector<Matrix *> *outputsSet) {
+    ISimpleData(std::vector<T *> *inputsSet, std::vector<T *> *outputsSet) {
         if (inputsSet->size() != outputsSet->size()) {
             std::stringstream str;
             str << "Data array lengths don't match: " << inputsSet->size()
@@ -28,32 +27,33 @@ public:
         outputsSet_ = outputsSet;
     }
 
-    ~SimpleData() {
-        for (Matrix *m:*inputsSet_)
+    ~ISimpleData() {
+        for (T *m:*inputsSet_)
             delete m;
         delete inputsSet_;
 
-        for (Matrix *m:*outputsSet_)
+        for (T *m:*outputsSet_)
             delete m;
         delete outputsSet_;
     }
 
-    std::vector<Matrix *> *getTrainingInputs() override {
+    std::vector<T *> *getTrainingInputs() override {
         return inputsSet_;
     }
 
-    std::vector<Matrix *> *getTrainingOutputs() override {
+    std::vector<T *> *getTrainingOutputs() override {
         return outputsSet_;
     }
 
-    std::vector<Matrix *> *getValidationInputs() override {
+    std::vector<T *> *getValidationInputs() override {
         return inputsSet_;
     }
 
-    std::vector<Matrix *> *getValidationOutputs() override {
+    std::vector<T *> *getValidationOutputs() override {
         return outputsSet_;
     }
 };
 
+typedef ISimpleData<Matrix> SimpleData;
 
 #endif //NNPP_SIMPLEDDATA_H

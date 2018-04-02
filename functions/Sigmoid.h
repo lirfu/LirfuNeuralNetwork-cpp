@@ -10,14 +10,28 @@
 #include "DerivativeFunction.h"
 
 class Sigmoid : public DerivativeFunction {
+private:
+    class Function : public IFunction {
+    public:
+        double calculate(double value) override {
+            return 1. / (1 + exp(-value));
+        }
+    } function;
+
+    class Derivative : public IFunction {
+    public:
+        double calculate(double value) override {
+            double val = 1. / (1 + exp(-value));
+            return val * (1 - val);
+        }
+    } derivative;
 public:
-    double calculate(double argument) override {
-        return 1. / (1 + exp(-argument));
+    IFunction &getFunction() override {
+        return function;
     }
 
-    double calculateDerivative(double argument) override {
-        double value = calculate(argument);
-        return value * (1 - value);
+    IFunction &getDerivative() override {
+        return derivative;
     }
 };
 

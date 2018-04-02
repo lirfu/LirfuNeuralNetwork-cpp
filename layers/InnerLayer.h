@@ -8,20 +8,17 @@
 
 #include "Layer.h"
 
-class InnerLayer : public Layer {
+template<typename T>
+class InnerLayer : public Layer<T> {
 protected:
-    InnerLayer(Matrix &output) : Layer(output) {}
+    InnerLayer(T &output) : Layer<T>(output) {}
 
-    InnerLayer(Layer &layer) : Layer(layer) {}
-
-    InnerLayer() {}
+    InnerLayer(Layer<T> &layer) : Layer<T>(layer) {}
 
 public:
-    ~InnerLayer() = default;
+    virtual void forwardPass(Layer<T> &leftLayer)=0;
 
-    virtual void forwardPass(Layer &leftLayer)=0;
-
-    virtual Matrix &backwardPass(Matrix &outDiff, Matrix &leftOutputs, double learningRate)=0;
+    virtual T &backwardPass(T &outDiff, T &leftOutputs, double learningRate)=0;
 
     virtual void updateWeights()=0;
 };

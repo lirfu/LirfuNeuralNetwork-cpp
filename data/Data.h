@@ -8,16 +8,18 @@
 
 #include "../matrix/Matrix.h"
 
-class Data {
+template <typename T>
+class IData {
 public:
-    virtual std::vector<Matrix *> *getTrainingInputs()=0;
+    virtual std::vector<T *> *getTrainingInputs()=0;
 
-    virtual std::vector<Matrix *> *getTrainingOutputs()=0;
+    virtual std::vector<T *> *getTrainingOutputs()=0;
 
-    virtual std::vector<Matrix *> *getValidationInputs()=0;
+    virtual std::vector<T *> *getValidationInputs()=0;
 
-    virtual std::vector<Matrix *> *getValidationOutputs()=0;
+    virtual std::vector<T *> *getValidationOutputs()=0;
 };
 
+typedef IData<Matrix> Data;
 
 #endif //NNPP_DATASET_H

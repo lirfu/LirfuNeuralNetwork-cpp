@@ -5,20 +5,19 @@
 #ifndef NNPP_SEPARATEDDATA_H
 #define NNPP_SEPARATEDDATA_H
 
-
-#include "../matrix/Matrix.h"
 #include "Data.h"
 
-class SeparatedData : public Data {
+template <typename T>
+class ISeparatedData : public IData<T> {
 private:
-    std::vector<Matrix *> *trainingInputs_;
-    std::vector<Matrix *> *trainingOutputs_;
-    std::vector<Matrix *> *testInputs_;
-    std::vector<Matrix *> *testOutputs_;
+    std::vector<T *> *trainingInputs_;
+    std::vector<T *> *trainingOutputs_;
+    std::vector<T *> *testInputs_;
+    std::vector<T *> *testOutputs_;
 
 public:
-    SeparatedData(std::vector<Matrix *> *trainingInputs, std::vector<Matrix *> *trainingOutputs,
-                  std::vector<Matrix *> *testInputs, std::vector<Matrix *> *testOutputs) {
+    ISeparatedData(std::vector<T *> *trainingInputs, std::vector<T *> *trainingOutputs,
+                  std::vector<T *> *testInputs, std::vector<T *> *testOutputs) {
         if (trainingInputs->size() != trainingOutputs->size()) {
             std::stringstream str;
             str << "Training data array lengths don't match: " << trainingInputs->size()
@@ -38,20 +37,20 @@ public:
         testOutputs_ = testOutputs;
     }
 
-    ~SeparatedData() {
-        for (Matrix *m : *trainingInputs_)
+    ~ISeparatedData() {
+        for (T *m : *trainingInputs_)
             delete m;
         delete trainingInputs_;
 
-        for (Matrix *m : *trainingOutputs_)
+        for (T *m : *trainingOutputs_)
             delete m;
         delete trainingOutputs_;
 
-        for (Matrix *m : *testInputs_)
+        for (T *m : *testInputs_)
             delete m;
         delete testInputs_;
 
-        for (Matrix *m : *testOutputs_)
+        for (T *m : *testOutputs_)
             delete m;
         delete testOutputs_;
     }
@@ -63,30 +62,30 @@ public:
 //                uint randIndexTr = rand.nextInt(trainingInputs.size());
 //                uint randIndexTs = rand.nextInt(testInputs.size());
 //
-//                Matrix tI = trainingInputs[randIndexTr];
+//                T tI = trainingInputs[randIndexTr];
 //                trainingInputs[randIndexTr] = testInputs[randIndexTs];
 //                testInputs[randIndexTs] = tI;
 //
-//                Matrix tO = trainingOutputs[randIndexTr];
+//                T tO = trainingOutputs[randIndexTr];
 //                trainingOutputs[randIndexTr] = testOutputs[randIndexTs];
 //                testOutputs[randIndexTs] = tO;
 //
 //            }
 //    }
 
-    std::vector<Matrix *> *getTrainingInputs() override {
+    std::vector<T *> *getTrainingInputs() override {
         return trainingInputs_;
     }
 
-    std::vector<Matrix *> *getTrainingOutputs() override {
+    std::vector<T *> *getTrainingOutputs() override {
         return trainingOutputs_;
     }
 
-    std::vector<Matrix *> *getValidationInputs() override {
+    std::vector<T *> *getValidationInputs() override {
         return testInputs_;
     }
 
-    std::vector<Matrix *> *getValidationOutputs() override {
+    std::vector<T *> *getValidationOutputs() override {
         return testOutputs_;
     }
 };

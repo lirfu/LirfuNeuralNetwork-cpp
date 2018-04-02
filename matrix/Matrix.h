@@ -15,7 +15,6 @@
 #include <string>
 #include <sys/param.h>
 #include <vector>
-#include <fstream>
 #include <sstream>
 #include <iostream>
 #include <cmath>
@@ -24,6 +23,7 @@
 #include <cstring>
 #include <cassert>
 #include "MatrixDimension.h"
+#include "../functions/IFunction.h"
 
 using namespace std;
 
@@ -179,6 +179,7 @@ public:
     }
 
     /* OPERATORS */
+
     /** Copy assignment. Deletes current data and copies data from given matrix. */
     Matrix &operator=(const Matrix &matrix) {
         if (this != &matrix) {
@@ -225,26 +226,6 @@ public:
     /**Checks if all data is different (element-wise). */
     bool operator!=(const Matrix &matrix) {
         return !(*this == matrix);
-    }
-
-    /**Checks if all data is smaller (element-wise). */
-    bool operator<(const Matrix &matrix) {
-        return compareData([](double a, double b) -> bool { return a < b; }, matrix);
-    }
-
-    /**Checks if all data is smaller or equal (element-wise). */
-    bool operator<=(const Matrix &matrix) {
-        return compareData([](double a, double b) -> bool { return a <= b; }, matrix);
-    }
-
-    /**Checks if all data is larger (element-wise). */
-    bool operator>(const Matrix &matrix) {
-        return compareData([](double a, double b) -> bool { return a > b; }, matrix);
-    }
-
-    /**Checks if all data is larger or equal (element-wise). */
-    bool operator>=(const Matrix &matrix) {
-        return compareData([](double a, double b) -> bool { return a >= b; }, matrix);
     }
 
     /** Add given matrix to this matrix (element-wise). */
@@ -297,9 +278,7 @@ public:
 
     /** Construct new matrix from multiplication of given scalar and this (element-wise). */
     friend Matrix operator*(double value, Matrix &matrix) {
-        Matrix m(matrix);
-        m *= value;
-        return m;
+        return matrix * value;
     }
 
     /** Multiply given matrix to this matrix (element-wise). */
@@ -339,7 +318,7 @@ public:
     Matrix &operator^=(Function &&f) {
         uint max = rows_ * cols_;
         for (uint i = 0; i < max; i++)
-            data_[i] = f(data_[i]);
+            data_[i] = f.calculate(data_[i]);
         return *this;
     }
 
