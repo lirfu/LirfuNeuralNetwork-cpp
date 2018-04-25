@@ -17,6 +17,10 @@ public:
     virtual std::vector<Matrix *> *getValidationInputs()=0;
 
     virtual std::vector<Matrix *> *getValidationOutputs()=0;
+
+    virtual ulong trainSize()=0;
+
+    virtual ulong testSize()=0;
 };
 
 

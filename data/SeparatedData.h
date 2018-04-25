@@ -89,6 +89,25 @@ public:
     std::vector<Matrix *> *getValidationOutputs() override {
         return testOutputs_;
     }
+
+    ulong trainSize() override {
+        return trainingInputs_->size();
+    }
+
+    ulong testSize() override {
+        return testInputs_->size();
+    }
+
+    /**
+    *
+    * @param inputs Vector of inputs
+    * @param outputs Vector of outputs
+    * @param ratio Test to train ratio
+    * @return SeparatedData object
+    */
+    static SeparatedData separateData(std::vector<Matrix *> *inputs, std::vector<Matrix *> *outputs, double ratio) {
+        return {inputs, outputs, inputs, outputs};
+    }
 };
 
 

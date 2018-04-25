@@ -53,6 +53,14 @@ public:
     std::vector<Matrix *> *getValidationOutputs() override {
         return outputsSet_;
     }
+
+    ulong trainSize() override {
+        return inputsSet_->size();
+    }
+
+    ulong testSize() override {
+        return inputsSet_->size();
+    }
 };
 
 
