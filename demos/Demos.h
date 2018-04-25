@@ -5,14 +5,19 @@
 #ifndef NNPP_DEMOS_H
 #define NNPP_DEMOS_H
 
-
-class Demos {
-public:
+namespace Demos {
     /**
-     * A regression of a custom multidimensional function. The log is intended to be processed by a parser (to display
-     * results on a graph of whatever you want).
+     * A regression of a custom 1-dimensional function. The standard output is intended to be processed by a
+     * third-party program (to display results on a graph or whatever you want).
      */
-    static void demoRegression();
+    void demoRegression();
+
+    /**
+     * Use Genetic Programming to build the perfect neural network for solving a regression problem.
+     */
+    void demoGPBuilder();
+
+    void demoXORProblem();
 };
 
 
