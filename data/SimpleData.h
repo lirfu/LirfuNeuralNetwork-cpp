@@ -52,6 +52,14 @@ public:
     std::vector<T *> *getValidationOutputs() override {
         return outputsSet_;
     }
+
+    ulong trainSize() override {
+        return inputsSet_->size();
+    }
+
+    ulong testSize() override {
+        return inputsSet_->size();
+    }
 };
 
 typedef ISimpleData<Matrix> SimpleData;

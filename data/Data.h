@@ -17,7 +17,11 @@ public:
 
     virtual std::vector<T *> *getValidationInputs()=0;
 
-    virtual std::vector<T *> *getValidationOutputs()=0;
+    virtual std::vector<Matrix *> *getValidationOutputs()=0;
+
+    virtual ulong trainSize()=0;
+
+    virtual ulong testSize()=0;
 };
 
 typedef IData<Matrix> Data;
