@@ -7,6 +7,7 @@
 
 
 #include "Layer.h"
+#include "../weightinitializers/WeightInitializer.h"
 
 template<typename T>
 class InnerLayer : public Layer<T> {
@@ -16,11 +17,15 @@ protected:
     InnerLayer(Layer<T> &layer) : Layer<T>(layer) {}
 
 public:
+    ~InnerLayer() = default;
+
+    virtual void initialize(WeightInitializer *initializer)=0;
+
     virtual void forwardPass(Layer<T> &leftLayer)=0;
 
     virtual T &backwardPass(T &outDiff, T &leftOutputs, double learningRate)=0;
 
-    virtual void updateWeights()=0;
+    virtual void updateWeights(ulong batchSize)=0;
 };
 
 

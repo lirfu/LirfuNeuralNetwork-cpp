@@ -6,6 +6,7 @@
 #define NNPP_FULLYCONNECTEDLAYER_H
 
 
+#include <memory>
 #include "InnerLayer.h"
 #include "../functions/DerivativeFunction.h"
 #include "../descentmethods/DescendMethod.h"
@@ -44,7 +45,9 @@ public:
               inputSize_(inputSize), activation_(activationFunction), descendMethod_(descendMethod),
               biases_(1, neuronNumber), weights_(inputSize, neuronNumber),
               biasDeltas_(1, neuronNumber), weightDeltas_(inputSize, neuronNumber) {
+    }
 
+    void initialize(WeightInitializer *initializer) override {
         initializer->initialize(biases_);
         initializer->initialize(weights_);
     }
@@ -74,7 +77,11 @@ public:
         return outputDifferences;
     }
 
-    void updateWeights() override {
+    void updateWeights(ulong batchSize) override {
+        // Batch size correction.
+        weightDeltas_ *= (1. / batchSize);
+        biasDeltas_ *= (1. / batchSize);
+
         // Update weights.
         weights_ += weightDeltas_;
         biases_ += biasDeltas_;

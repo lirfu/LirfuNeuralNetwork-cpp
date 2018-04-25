@@ -14,12 +14,10 @@ class Layer {
 protected:
     explicit Layer(T &output) : output_(output) {}
 
-    Layer(Layer &layer): output_(layer.output_){
-    }
-
-public:
+    Layer(Layer &layer) : output_(layer.output_) {}
 
     T output_;
+public:
     ~Layer() = default;
 
     /**
