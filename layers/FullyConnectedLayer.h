@@ -6,6 +6,7 @@
 #define NNPP_FULLYCONNECTEDLAYER_H
 
 
+#include <memory>
 #include "InnerLayer.h"
 #include "../functions/DerivativeFunction.h"
 #include "../descentmethods/DescendMethod.h"
@@ -14,8 +15,8 @@
 class FullyConnectedLayer : public InnerLayer {
 private:
     uint inputSize_;
-    DerivativeFunction *function_;
-    DescendMethod *descendMethod_;
+    std::shared_ptr<DerivativeFunction> function_;
+    std::shared_ptr<DescendMethod> descendMethod_;
 
     Matrix net_;
     Matrix weights_;
@@ -39,21 +40,20 @@ private:
 //    }
 
 public:
-    FullyConnectedLayer(uint inputSize, uint neuronNumber, DerivativeFunction *function,
-                        DescendMethod *descendMethod, WeightInitializer *initializer)
+    FullyConnectedLayer(uint inputSize, uint neuronNumber, std::shared_ptr<DerivativeFunction> function,
+                        std::shared_ptr<DescendMethod> descendMethod)
             : InnerLayer(*new Matrix(1, neuronNumber)),
               inputSize_(inputSize), function_(function), descendMethod_(descendMethod),
               biases_(1, neuronNumber), weights_(inputSize, neuronNumber),
               biasDeltas_(1, neuronNumber), weightDeltas_(inputSize, neuronNumber) {
+    }
 
+    void initialize(WeightInitializer *initializer) override {
         initializer->initialize(biases_);
         initializer->initialize(weights_);
     }
 
-    ~FullyConnectedLayer() {
-        delete function_;
-        delete descendMethod_;
-    }
+    ~FullyConnectedLayer() = default;
 
     void forwardPass(Layer &leftLayer) override {
         // sigm(x * w + w0)
@@ -78,7 +78,11 @@ public:
         return outputDifferences;
     }
 
-    void updateWeights() override {
+    void updateWeights(ulong batchSize) override {
+        // Batch size correction.
+        weightDeltas_ *= (1. / batchSize);
+        biasDeltas_ *= (1. / batchSize);
+
         // Update weights.
         weights_ += weightDeltas_;
         biases_ += biasDeltas_;

@@ -7,6 +7,7 @@
 
 
 #include "Layer.h"
+#include "../weightinitializers/WeightInitializer.h"
 
 class InnerLayer : public Layer {
 protected:
@@ -19,11 +20,13 @@ protected:
 public:
     ~InnerLayer() = default;
 
+    virtual void initialize(WeightInitializer *initializer)=0;
+
     virtual void forwardPass(Layer &leftLayer)=0;
 
     virtual Matrix &backwardPass(Matrix &outDiff, Matrix &leftOutputs, double learningRate)=0;
 
-    virtual void updateWeights()=0;
+    virtual void updateWeights(ulong batchSize)=0;
 };
 
 

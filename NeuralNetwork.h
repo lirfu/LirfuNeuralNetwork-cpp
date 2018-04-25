@@ -5,7 +5,7 @@
 #ifndef NN_NEURALNETWORK_H
 #define NN_NEURALNETWORK_H
 
-
+#include<memory>
 #include "layers/InnerLayer.h"
 #include "layers/InputLayer.h"
 #include "data/SeparatedData.h"
@@ -18,6 +18,8 @@ private:
 public:
     NeuralNetwork(InputLayer *inputLayer, std::initializer_list<InnerLayer *> layers);
 
+    NeuralNetwork(InputLayer *inputLayer, std::vector<InnerLayer *> &layers);
+
     ~NeuralNetwork();
 
     Matrix &getOutput(const Matrix &input);
@@ -28,7 +30,7 @@ public:
 
     std::string toString();
 
-    std::vector<InnerLayer *> getLayers();
+    std::vector<InnerLayer*> getLayers();
 };
 
 

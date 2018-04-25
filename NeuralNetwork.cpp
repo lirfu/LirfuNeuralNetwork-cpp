@@ -4,16 +4,19 @@
 
 #include "NeuralNetwork.h"
 
-NeuralNetwork::NeuralNetwork(InputLayer *inputLayer, std::initializer_list<InnerLayer *> layers) : inputLayer_(
-        inputLayer) {
+NeuralNetwork::NeuralNetwork(InputLayer *inputLayer, std::initializer_list<InnerLayer *> layers) :
+        inputLayer_(inputLayer) {
     for (InnerLayer *l : layers)
         hiddenLayers_.push_back(l);
 }
 
+NeuralNetwork::NeuralNetwork(InputLayer *inputLayer, std::vector<InnerLayer *> &layers)
+        : inputLayer_(inputLayer), hiddenLayers_(layers) {}
+
 NeuralNetwork::~NeuralNetwork() {
-    delete inputLayer_;
-    for (InnerLayer *l : hiddenLayers_)
-        delete l;
+//    uint size = hiddenLayers_.size();
+//    for (uint i = 0; i < size; i++)
+//        delete hiddenLayers_[i];
 }
 
 Matrix &NeuralNetwork::getOutput(const Matrix &input) {
@@ -34,7 +37,7 @@ double NeuralNetwork::backpropagate(double learningRate, vector<Data *> &dataBat
     // Updating for each batch.
     for (Data *batch : dataBatches) {
         // Accumulating deltas for each sample in batch.
-        for (uint i = 0; i < batch->getTrainingInputs()->size(); i++) {
+        for (uint i = 0; i < batch->trainSize(); i++) {
             Matrix &input = *batch->getTrainingInputs()->operator[](i);
             Matrix &targetOutput = *batch->getTrainingOutputs()->operator[](i);
 
@@ -58,11 +61,11 @@ double NeuralNetwork::backpropagate(double learningRate, vector<Data *> &dataBat
 
         // Update weights with accumulated deltas.
         for (InnerLayer *layer : hiddenLayers_)
-            layer->updateWeights();
+            layer->updateWeights(batch->trainSize());
 
         // Use test inputs to calculate the final error.
         error += calculateError(batch->getValidationInputs(), batch->getValidationOutputs()) / 2;
-        numberOfData += batch->getValidationInputs()->size();
+        numberOfData += batch->testSize();
     }
     return error / numberOfData; // Return normalized error
 }
