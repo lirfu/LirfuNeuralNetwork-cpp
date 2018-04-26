@@ -40,7 +40,7 @@ private:
 
 public:
     FullyConnectedLayer(uint inputSize, uint neuronNumber, std::shared_ptr<DerivativeFunction> activationFunction,
-                        std::shared_ptr<DescendMethod> descendMethod, WeightInitializer *initializer)
+                        std::shared_ptr<DescendMethod> descendMethod)
             : InnerLayer<T>(*new T(1, neuronNumber)),
               inputSize_(inputSize), activation_(activationFunction), descendMethod_(descendMethod),
               biases_(1, neuronNumber), weights_(inputSize, neuronNumber),

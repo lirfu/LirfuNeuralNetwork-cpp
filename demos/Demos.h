@@ -12,11 +12,6 @@ namespace Demos {
      */
     void demoRegression();
 
-    /**
-     * Use Genetic Programming to build the perfect neural network for solving a regression problem.
-     */
-    void demoGPBuilder();
-
     void demoXORProblem();
 };
 

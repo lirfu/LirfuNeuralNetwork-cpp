@@ -7,7 +7,7 @@
 
 #include "Data.h"
 
-template <typename T>
+template<typename T>
 class ISeparatedData : public IData<T> {
 private:
     std::vector<T *> *trainingInputs_;
@@ -17,7 +17,7 @@ private:
 
 public:
     ISeparatedData(std::vector<T *> *trainingInputs, std::vector<T *> *trainingOutputs,
-                  std::vector<T *> *testInputs, std::vector<T *> *testOutputs) {
+                   std::vector<T *> *testInputs, std::vector<T *> *testOutputs) {
         if (trainingInputs->size() != trainingOutputs->size()) {
             std::stringstream str;
             str << "Training data array lengths don't match: " << trainingInputs->size()
@@ -96,18 +96,6 @@ public:
     ulong testSize() override {
         return testInputs_->size();
     }
-
-    /**
-    *
-    * @param inputs Vector of inputs
-    * @param outputs Vector of outputs
-    * @param ratio Test to train ratio
-    * @return SeparatedData object
-    */
-    static SeparatedData separateData(std::vector<Matrix *> *inputs, std::vector<Matrix *> *outputs, double ratio) {
-        return {inputs, outputs, inputs, outputs};
-    }
 };
-
 
 #endif //NNPP_SEPARATEDDATA_H

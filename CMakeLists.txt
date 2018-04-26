@@ -10,12 +10,11 @@ set(SOURCE_FILES main.cpp
         functions/IFunction.h functions/DerivativeFunction.h functions/Sigmoid.h functions/Linear.h
         descentmethods/DescendMethod.h descentmethods/VanillaGradientDescend.h
         weightinitializers/WeightInitializer.h weightinitializers/RandomWeightInitializer.h
-        NeuralNetwork.h
+        NeuralNetwork.h NeuralNetwork.cpp
         matrix/MatrixTests.h
-        demos/Demos.h demos/Demos.cpp
-        NNBuilder.h
-        )
+        demos/Demos.h demos/Demos.cpp data/DataUtils.h)
 
 add_definitions(-DDEBUG)  # Turns on asserts, extra printouts, ... !!!TURN OFF IN PRODUCTION!!!
+add_definitions(-DOUTPUT_RESULTS)
 
 add_executable(NNpp ${SOURCE_FILES})
