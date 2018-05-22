@@ -59,24 +59,18 @@ private:
     }
 
 public:
-
-    static uint constructorCalls;
-
     /* CONSTRUCTORS */
     Matrix() {
-        constructorCalls++;
         rows_ = 0;
         cols_ = 0;
         data_ = nullptr;
     }
 
     Matrix(uint rows, uint cols) : rows_(rows), cols_(cols) {
-        constructorCalls++;
         data_ = new double[rows * cols];
     }
 
     Matrix(const Matrix &matrix) : rows_(matrix.rows_), cols_(matrix.cols_), data_(new double[rows_ * cols_]) {
-        constructorCalls++;
         memcpy(data_, matrix.data_, rows_ * cols_ * sizeof(double));
     }
 
