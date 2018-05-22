@@ -109,8 +109,10 @@ public:
 
         uint i = 0;
         for (InnerLayer<T> *l:hiddenLayers_) {
-            stringstream1 << "Inner layer " << ++i << endl
-                          << l->toString();
+            if (i == hiddenLayers_.size() - 1) stringstream1 << "Output layer";
+            else stringstream1 << "Inner layer " << i;
+            stringstream1 << endl << l->toString();
+            ++i;
         }
         return stringstream1.str();
     }
