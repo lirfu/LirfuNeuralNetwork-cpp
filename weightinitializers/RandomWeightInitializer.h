@@ -22,6 +22,13 @@ public:
         generator_ = generator;
         random_ = random;
     }
+    RandomWeightInitializer(double min, double max, ulong seed) {
+        std::mt19937 generator(seed);
+        std::uniform_real_distribution<> random(min, max);
+
+        generator_ = generator;
+        random_ = random;
+    }
 
     void initialize(Matrix &weights) override {
         for (uint c = 0; c < weights.cols(); c++)
